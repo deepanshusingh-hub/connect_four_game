@@ -1,0 +1,57 @@
+body{
+    background-color: #fff;
+    box-sizing: border-box;
+    text-align: center;
+    justify-content: center;
+}
+
+.heading{
+    text-align: center;
+    justify-content: center;
+}
+.container{
+    display: flex;
+}
+.game{
+    position: absolute;
+    background-color: black;
+    align-items: center;
+    justify-content: center;
+    height: 450px;
+    width: 500px;
+    margin-left: 450px;
+    padding: 1.5rem;
+}
+
+.btn{
+    position: relative;
+    color:white;
+    background-color: black;
+    cursor: pointer;
+    margin-left: 1050px;
+    margin-top: 50px;
+    font-size: 25px;
+    
+}
+
+.column{
+    background: white;
+    color: white;
+    border-radius: 50px;
+    width: 70px;
+    height: 70px;
+    padding: auto;
+    cursor: pointer;
+}
+
+#board .human-coin,
+.human-coin {
+    border-radius: 50%;
+    background: #333;
+}
+/*defines cpu coin*/
+#board .cpu-coin,
+.cpu-coin {
+    border-radius: 50%;
+    background: #DC143C;
+}
