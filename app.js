@@ -41,7 +41,7 @@ function initialiseArr()
 
 //MINIMAX ALGORITHM
 function calculateByMatch(c,d,e,count){
-    e=0;
+//    console.log(""+c+" "+d+" "+e+" "+count);    e=0;
     var tot = 0;
     if(count==4) {
         if(c==4) tot+=1000;
@@ -63,7 +63,7 @@ function calculateByMatch(c,d,e,count){
         if(c==2) tot+=5;
     if(e==1) tot-=1;    
     }
-    console.log(tot);
+    //console.log(tot);
     return tot;
 }
 function findRowMatch(p1,count){
@@ -75,9 +75,10 @@ function findRowMatch(p1,count){
             else if(arr[i][j+k]==-1) d++;   
             else e++;
 
-    tot = Math.max(tot,calculateByMatch(c,d,e));
-    c=0,d=0,e=0;
             }     
+
+    tot = Math.max(tot,calculateByMatch(c,d,e,count));
+    c=0,d=0,e=0;
         }
     }
     return tot;
@@ -90,18 +91,20 @@ function findColMatch(p1,count){
             if(arr[i+k][j]==p1) c++;
             else if(arr[i+k][j]==-1) d++;   
             else e++;
-    tot = Math.max(tot,calculateByMatch(c,d,e));
-    c=0,d=0,e=0;
             }     
+
+        tot = Math.max(tot,calculateByMatch(c,d,e,count));
+        c=0,d=0,e=0;
         }
     }
     return tot;
 }
 function calcScore(){
     var score=-10000000;
-    for(var count = 1;count <5;++count) {
+    var count = 0;
+    for(count = 1;count <5;++count) {
         score = Math.max(score,findColMatch(currentPlayer,count));
-        console.log("Count :"+count+" "+score);
+        //console.log("Count :"+count+" "+score);
         score = Math.max(score,findRowMatch(currentPlayer,count));
     } 
     return score;
