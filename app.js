@@ -36,6 +36,80 @@ function initialiseArr()
         for(var j=0;j<7;j++)arr[i][j]=-1;
     }
 }
+
+//-----------------------------------------------------------
+
+//MINIMAX ALGORITHM
+function calculateByMatch(c,d,e,count){
+    e=0;
+    var tot = 0;
+    if(count==4) {
+        if(c==4) tot+=1000;
+        else if(c==3) {if(d==1) tot+=100; else tot+=70;}
+        else if(c==2) {if(d==1) tot+=5; else tot+=20;}
+        
+    if(e==3) tot-=50;
+    else if(e==2) tot-=20;
+    else if(e==1) tot-=1;
+    }
+    else if(count==3){
+
+        if(c==3) tot+=100;
+        else if(c==2) {if(d==1) tot+=20; else tot+=5;}
+    if(e==2) tot-=20;
+    else if(e==1) tot-=1;
+    }
+    else if(count==2){
+        if(c==2) tot+=5;
+    if(e==1) tot-=1;    
+    }
+    console.log(tot);
+    return tot;
+}
+function findRowMatch(p1,count){
+    var tot=0;var c=0,d=0,e=0;
+    for(let i=0;i<6;++i){
+        for(let j=0;j<8-count;++j){
+            for(let k=0;k<count;++k){
+            if(arr[i][j+k]==p1) c++;
+            else if(arr[i][j+k]==-1) d++;   
+            else e++;
+
+    tot = Math.max(tot,calculateByMatch(c,d,e));
+    c=0,d=0,e=0;
+            }     
+        }
+    }
+    return tot;
+}
+function findColMatch(p1,count){
+    var tot=0;var c=0,d=0,e=0;
+    for(let i=0;i<7-count;++i){
+        for(let j=0;j<8;++j){
+            for(let k=0;k<count;++k){
+            if(arr[i+k][j]==p1) c++;
+            else if(arr[i+k][j]==-1) d++;   
+            else e++;
+    tot = Math.max(tot,calculateByMatch(c,d,e));
+    c=0,d=0,e=0;
+            }     
+        }
+    }
+    return tot;
+}
+function calcScore(){
+    var score=-10000000;
+    for(var count = 1;count <5;++count) {
+        score = Math.max(score,findColMatch(currentPlayer,count));
+        console.log("Count :"+count+" "+score);
+        score = Math.max(score,findRowMatch(currentPlayer,count));
+    } 
+    return score;
+}
+
+
+//-----------------------------------------------------------
+
 // return row where coin should be placed
 var rowToBeFilled=function(col)
 {   
@@ -133,7 +207,8 @@ function changeColor(e)
     if(isScoreEnough(r,column))
     {
         if(currentPlayer==0)alert(`Congratulations you won!!!!!!!`);
-        else alert('oops computer won,better luck next time.Cheers!!!!')
+        else alert('oops computer won,better luck next time.Cheers!!!!');
+        
     }
     else if(numberOfMovesComleted==42){
         //console.log(arr);
@@ -143,15 +218,15 @@ function changeColor(e)
     if(currentPlayer==0)
     {
         row[0].style.backgroundColor='red';
+        console.log(calcScore());
         currentPlayer=1;
+
     }
     else
     {
         row[0].style.backgroundColor='yellow';
+        console.log(calcScore());
         currentPlayer=0;
     }
 }
-//MINIMAX ALGORITHM
-
-
 
