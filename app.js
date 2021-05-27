@@ -40,9 +40,11 @@ function initialiseArr()
 //-----------------------------------------------------------
 
 //MINIMAX ALGORITHM
-function calculateByMatch(c,d,e,count){
+// Dibas Version of heuristic
+
+function calculateByMatchDibas(c,d,e,count){
 //    console.log(""+c+" "+d+" "+e+" "+count);    e=0;
-    var tot = 0;
+    let tot = 0;
     if(count==4) {
         if(c==4) tot+=1000;
         else if(c==3) {if(d==1) tot+=100; else tot+=70;}
@@ -66,8 +68,27 @@ function calculateByMatch(c,d,e,count){
     //console.log(tot);
     return tot;
 }
+
+function calculateByMatchDeepanshu(c,d,e,count){
+    //    console.log(""+c+" "+d+" "+e+" "+count);    e=0;
+        
+        let tot = 0;
+        if(count==4) {
+            if(c==4) tot+=100;
+            else if(c==3&&d==1) tot+=5;
+            else if(c==2&&d==2) tot+=2;
+            else if(c==1&&e==3) tot+=20;
+            if(e==3&&d==1) tot-=4;    
+        }
+        return tot;
+}
+
+function calculateByMatch(c,d,e,count){
+    return calculateByMatchDeepanshu(c,d,e,count);
+    //return calculateByMatchDibas(c,d,e,count);
+}
 function findRowMatch(p1,count){
-    var tot=0;var c=0,d=0,e=0;
+    let tot=0;var c=0,d=0,e=0;
     for(let i=0;i<6;++i){
         for(let j=0;j<8-count;++j){
             for(let k=0;k<count;++k){
@@ -77,14 +98,14 @@ function findRowMatch(p1,count){
 
             }     
 
-    tot = Math.max(tot,calculateByMatch(c,d,e,count));
+    tot +=calculateByMatch(c,d,e,count);
     c=0,d=0,e=0;
         }
     }
     return tot;
 }
 function findColMatch(p1,count){
-    var tot=0;var c=0,d=0,e=0;
+    let tot=0;var c=0,d=0,e=0;
     for(let i=0;i<7-count;++i){
         for(let j=0;j<8;++j){
             for(let k=0;k<count;++k){
@@ -93,24 +114,87 @@ function findColMatch(p1,count){
             else e++;
             }     
 
-        tot = Math.max(tot,calculateByMatch(c,d,e,count));
-        c=0,d=0,e=0;
+            tot +=calculateByMatch(c,d,e,count);
+            c=0,d=0,e=0;
         }
     }
     return tot;
 }
-function calcScore(){
-    var score=-10000000;
-    var count = 0;
-    for(count = 1;count <5;++count) {
-        score = Math.max(score,findColMatch(currentPlayer,count));
+function findDiag1Match(p1,count){
+    let tot=0;var c=0,d=0,e=0;
+    for(let i=0;i<7-count;++i){
+        for(let j=0;j<8-count;++j){
+            for(let k=0;k<count;++k){
+            if(arr[i+k][j+k]==p1) c++;
+            else if(arr[i+k][j+k]==-1) d++;   
+            else e++;
+            }     
+
+            tot +=calculateByMatch(c,d,e,count);
+            c=0,d=0,e=0;
+        }
+    }
+    return tot;
+}
+function findDiag2Match(p1,count){
+    let tot=0;var c=0,d=0,e=0;
+    for(let i=5;i>=count-1;--i){
+        for(let j=0;j<8-count;++j){
+            for(let k=0;k<count;++k){
+            if(arr[i-k][j+k]==p1) c++;
+            else if(arr[i-k][j+k]==-1) d++;   
+            else e++;
+            }     
+
+            tot +=calculateByMatch(c,d,e,count);
+            c=0,d=0,e=0;
+        }
+    }
+    return tot;
+}
+function calcScore(start){
+    let score=start;
+    var count = 4;
+    
+    //for(count = 1;count <5;++count) {
+        score +=findColMatch(currentPlayer,count);
         //console.log("Count :"+count+" "+score);
-        score = Math.max(score,findRowMatch(currentPlayer,count));
-    } 
+        score +=findRowMatch(currentPlayer,count);
+        score +=findDiag1Match(currentPlayer,count);
+        score +=findDiag2Match(currentPlayer,count);
+    //} 
     return score;
 }
 
+function getValidLocations(){
+    var ans=[];
+    for(var i=0;i<7;++i) if(arr[0][i]==-1) ans.push(i);
+    return ans;
+}
 
+function findBestColumn(p1){
+    var valid = getValidLocations();
+    var ans=valid[0];
+    var debug = [];
+    let score = -10000;
+    if(valid.length==1) return ans;
+
+    for(var f=0;f<valid.length;++f){
+        var j=valid[f];
+        var i=0;
+        while(i+1<6&&arr[i+1][j]==-1) i++;
+        arr[i][j]=p1;
+        var start =0;
+        for(var z=0;z<6;++z) if(arr[z][3]==p1) start+=3;
+        var newScore = calcScore(start);
+        debug.push(newScore);
+        if(newScore>score) {score=newScore; ans=j;}
+        arr[i][j] = -1;
+        //console.log(arr);
+    }
+    console.log(debug);
+    return ans;
+}
 //-----------------------------------------------------------
 
 // return row where coin should be placed
@@ -221,15 +305,16 @@ function changeColor(e)
     if(currentPlayer==0)
     {
         row[0].style.backgroundColor='red';
-        console.log(calcScore());
         currentPlayer=1;
 
+        console.log(findBestColumn(1));
     }
     else
     {
         row[0].style.backgroundColor='yellow';
-        console.log(calcScore());
         currentPlayer=0;
+
+        console.log(findBestColumn(1));
     }
 }
 
