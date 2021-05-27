@@ -11,6 +11,9 @@ body{
 }
 .container{
     display: flex;
+    margin: auto;
+    height: 500px;
+    width: 500px;
 }
 .game{
     position: absolute;
@@ -19,17 +22,17 @@ body{
     justify-content: center;
     height: 450px;
     width: 500px;
-    margin-left: 450px;
+    margin: auto;
     padding: 1.5rem;
 }
 
 .btn{
+    display: block;
     position: relative;
     color:white;
     background-color: black;
     cursor: pointer;
-    margin-left: 1050px;
-    margin-top: 50px;
+    margin: auto;
     font-size: 25px;
     
 }
