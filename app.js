@@ -37,12 +37,24 @@ function initialiseArr()
     }
 }
 
+
+// return row where coin should be placed
+var rowToBeFilled=function(col)
+{   
+    for(var i=5;i>=0;i--)
+    {
+        if(arr[i][col]==-1)return i;
+    }
+    return -1;
+}
 //-----------------------------------------------------------
 
 //MINIMAX ALGORITHM
-function calculateByMatch(c,d,e,count){
+// Dibas Version of heuristic
+
+function calculateByMatchDibas(c,d,e,count){
 //    console.log(""+c+" "+d+" "+e+" "+count);    e=0;
-    var tot = 0;
+    let tot = 0;
     if(count==4) {
         if(c==4) tot+=1000;
         else if(c==3) {if(d==1) tot+=100; else tot+=70;}
@@ -66,8 +78,33 @@ function calculateByMatch(c,d,e,count){
     //console.log(tot);
     return tot;
 }
+
+function calculateByMatchDeepanshu(c,d,e,count){
+    //    console.log(""+c+" "+d+" "+e+" "+count);    e=0;
+        
+        let tot = 0;
+        if(count==4) {
+            if(c==4) console.log(arr);
+            if(c==4) tot+=50;
+            else if(c==3&&d==1) tot+=20;
+            else if(c==2&&d==2) tot+=2;
+            
+            //adding blocking moves
+            if(c==1&&e==3) tot+=19;
+            if(c==2&&d==2) tot+=3;
+            
+            if(e==3&&d==1) tot-=10;
+            if(e==4) tot-=40;    
+        }
+        return tot;
+}
+
+function calculateByMatch(c,d,e,count){
+    return calculateByMatchDeepanshu(c,d,e,count);
+    //return calculateByMatchDibas(c,d,e,count);
+}
 function findRowMatch(p1,count){
-    var tot=0;var c=0,d=0,e=0;
+    let tot=0;var c=0,d=0,e=0;
     for(let i=0;i<6;++i){
         for(let j=0;j<8-count;++j){
             for(let k=0;k<count;++k){
@@ -77,14 +114,14 @@ function findRowMatch(p1,count){
 
             }     
 
-    tot = Math.max(tot,calculateByMatch(c,d,e,count));
+    tot +=calculateByMatch(c,d,e,count);
     c=0,d=0,e=0;
         }
     }
     return tot;
 }
 function findColMatch(p1,count){
-    var tot=0;var c=0,d=0,e=0;
+    let tot=0;var c=0,d=0,e=0;
     for(let i=0;i<7-count;++i){
         for(let j=0;j<8;++j){
             for(let k=0;k<count;++k){
@@ -93,37 +130,88 @@ function findColMatch(p1,count){
             else e++;
             }     
 
-        tot = Math.max(tot,calculateByMatch(c,d,e,count));
-        c=0,d=0,e=0;
+            tot +=calculateByMatch(c,d,e,count);
+            c=0,d=0,e=0;
+        }
+    }
+    return tot;
+}
+function findDiag1Match(p1,count){
+    let tot=0;var c=0,d=0,e=0;
+    for(let i=0;i<7-count;++i){
+        for(let j=0;j<8-count;++j){
+            for(let k=0;k<count;++k){
+            if(arr[i+k][j+k]==p1) c++;
+            else if(arr[i+k][j+k]==-1) d++;   
+            else e++;
+            }     
+
+            tot +=calculateByMatch(c,d,e,count);
+            c=0,d=0,e=0;
+        }
+    }
+    return tot;
+}
+function findDiag2Match(p1,count){
+    let tot=0;var c=0,d=0,e=0;
+    for(let i=5;i>=count-1;--i){
+        for(let j=0;j<8-count;++j){
+            for(let k=0;k<count;++k){
+            if(arr[i-k][j+k]==p1) c++;
+            else if(arr[i-k][j+k]==-1) d++;   
+            else e++;
+            }     
+
+            tot +=calculateByMatch(c,d,e,count);
+            c=0,d=0,e=0;
         }
     }
     return tot;
 }
 function calcScore(){
-    var score=-10000000;
-    var count = 0;
-    for(count = 1;count <5;++count) {
-        score = Math.max(score,findColMatch(currentPlayer,count));
+    let score=0;
+    var count = 4;
+    
+    for(var z=0;z<6;++z) if(arr[z][3]==currentPlayer) score+=1;
+    //for(count = 1;count <5;++count) {
+        score +=findColMatch(currentPlayer,count)*0.8;
         //console.log("Count :"+count+" "+score);
-        score = Math.max(score,findRowMatch(currentPlayer,count));
-    } 
+        score +=findRowMatch(currentPlayer,count);
+        score +=findDiag1Match(currentPlayer,count);
+        score +=findDiag2Match(currentPlayer,count);
+    //} 
     return score;
 }
 
-
-//-----------------------------------------------------------
-
-// return row where coin should be placed
-var rowToBeFilled=function(col)
-{   
-    for(var i=5;i>=0;i--)
-    {
-        if(arr[i][col]==-1)return i;
-    }
-    return -1;
+function getValidLocations(){
+    var ans=[];
+    for(var i=0;i<7;++i) if(arr[0][i]==-1) ans.push(i);
+    return ans;
 }
-// calculates if score is greater than or equal to four or not
 
+function findBestColumn(p1){
+    var valid = getValidLocations();
+    var ans=valid[0];
+    var debug = [];
+    let score = -10000;
+    if(valid.length==1) return ans;
+    
+    for(var f=0;f<valid.length;++f){
+        var j=valid[f];
+        var i=0;
+        while(i+1<6&&arr[i+1][j]==-1) i++;
+        arr[i][j]=p1;
+        var start =0;
+        for(var z=0;z<6;++z) if(arr[z][3]==p1) start+=3;
+        var newScore = calcScore();
+        debug.push(newScore);
+        if(newScore>score) {score=newScore; ans=j;}
+        arr[i][j] = -1;
+        //console.log(arr);
+    }
+    console.log(debug);
+    return ans;
+}
 var isScoreEnough=function(row,col)
 {
     var scoreLeft=0,scoreRight=0,scoreTop=0,scoreBottom=0,scoreLeftUpperDiagonal=0,scoreLeftLowerDiagonal=0,scoreRightUpperDiagonal=0,scoreRightLowerDiagonal=0;
@@ -194,6 +282,105 @@ var isScoreEnough=function(row,col)
      return false; //if score is not enough
 }
 
+function winningMove(){
+    var ch = false;
+    for(let i=0;i<6;++i) for(let j=0;j<7;++j) if(arr[i][j]!=-1) {
+        ch|=isScoreEnough(i,j);
+        if(ch==true) break;
+    }
+    return ch;
+}
+function isTerminal(){
+    
+    return (winningMove()||numberOfMovesComleted==42);
+}
+
+function minimax(depth,alpha,beta,maxPlayer){
+    
+    let valid = getValidLocations();
+    let ansarr=[valid[Math.floor(Math.random()*valid.length)],0];
+    //return ansarr;
+    let terminal = isTerminal();
+    if((depth==0)||terminal){
+        if(terminal){
+            if(winningMove()){
+                if(maxPlayer==currentPlayer) ansarr= [-1,-1000000000000];
+                else {
+                    ans=ansarr [-1,1000000000000];
+                        console.log("win");
+                        // debug
+                        //console.log(arr);
+                }
+            }
+            else ansarr = [-1,0];
+        }
+        else {
+            
+            //console.log(arr);
+            //var tmp =1-currentPlayer;
+            //currentPlayer = 1- maxPlayer;
+            //console.log(currentPlayer);
+            ansarr = [-1,calcScore()];
+            //currentPlayer = 1-tmp;
+        }
+        return ansarr;
+    }
+    if(maxPlayer) {
+        //console.log("Hello"+depth+" "+maxPlayer);
+        numberOfMovesComleted++;
+        let value = -Infinity;
+        let col = valid[Math.floor(Math.random()*valid.length)];
+        ansarr = [col,value];
+        for(let g=0;g<valid.length;++g){
+            let i=rowToBeFilled(valid[g]);
+            arr[i][valid[g]]=maxPlayer;
+            let newScore = minimax(depth-1,alpha,beta,1-maxPlayer)[1];
+            arr[i][valid[g]]=-1;
+            if(newScore > value) {
+                value = newScore;
+                col= valid[g];
+
+                ansarr = [col,value];
+            }
+            alpha = Math.max(alpha,value);
+            if(alpha>=beta) break;
+            
+        }
+
+        numberOfMovesComleted--;
+    }
+    else  {
+
+        numberOfMovesComleted++;
+        let value = Infinity;
+        let col = valid[Math.floor(Math.random()*valid.length)];
+        ansarr = [col,value];
+        for(let g=0;g<valid.length;++g){
+            let i=rowToBeFilled(valid[g]);
+            arr[i][valid[g]]=maxPlayer;
+            let newScore = minimax(depth-1,alpha,beta,1-maxPlayer)[1];
+
+            arr[i][valid[g]]=-1;
+            if(newScore < value) {
+                value = newScore;
+                col= valid[g];
+                ansarr = [col,value];
+            }
+            beta = Math.min(beta,value);
+            if(alpha>=beta) break;
+            
+        }
+        numberOfMovesComleted--;
+    }
+   // console.log(ansarr);
+    return ansarr;
+    //currentPlayer = maxPlayer;
+}
+//-----------------------------------------------------------
+
+// calculates if score is greater than or equal to four or not
+
+
 //function to display coin in html
     //function to add event listener to each column
 Array.prototype.forEach.call(tableCell,(cell)=>{
@@ -221,15 +408,16 @@ function changeColor(e)
     if(currentPlayer==0)
     {
         row[0].style.backgroundColor='red';
-        console.log(calcScore());
         currentPlayer=1;
 
+        console.log(minimax(5,-Infinity,Infinity,1)[0]);
     }
     else
     {
         row[0].style.backgroundColor='yellow';
-        console.log(calcScore());
         currentPlayer=0;
+
+//        console.log(findBestColumn(1));
     }
 }
 
