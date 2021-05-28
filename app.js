@@ -84,11 +84,17 @@ function calculateByMatchDeepanshu(c,d,e,count){
         
         let tot = 0;
         if(count==4) {
-            if(c==4) tot+=100;
-            else if(c==3&&d==1) tot+=5;
+            if(c==4) console.log(arr);
+            if(c==4) tot+=50;
+            else if(c==3&&d==1) tot+=20;
             else if(c==2&&d==2) tot+=2;
-            //else if(c==1&&e==3) tot+=20;
-            if(e==3&&d==1) tot-=4;    
+            
+            //adding blocking moves
+            if(c==1&&e==3) tot+=19;
+            if(c==2&&d==2) tot+=3;
+            
+            if(e==3&&d==1) tot-=10;
+            if(e==4) tot-=40;    
         }
         return tot;
 }
@@ -166,9 +172,9 @@ function calcScore(){
     let score=0;
     var count = 4;
     
-    for(var z=0;z<6;++z) if(arr[z][3]==currentPlayer) score+=3;
+    for(var z=0;z<6;++z) if(arr[z][3]==currentPlayer) score+=1;
     //for(count = 1;count <5;++count) {
-        score +=findColMatch(currentPlayer,count);
+        score +=findColMatch(currentPlayer,count)*0.8;
         //console.log("Count :"+count+" "+score);
         score +=findRowMatch(currentPlayer,count);
         score +=findDiag1Match(currentPlayer,count);
@@ -277,8 +283,11 @@ var isScoreEnough=function(row,col)
 }
 
 function winningMove(){
-    var ch = 0;
-    for(let i=0;i<6;++i) for(let j=0;j<7;++j) if(arr[i][j]!=-1) ch|=isScoreEnough(i,j);
+    var ch = false;
+    for(let i=0;i<6;++i) for(let j=0;j<7;++j) if(arr[i][j]!=-1) {
+        ch|=isScoreEnough(i,j);
+        if(ch==true) break;
+    }
     return ch;
 }
 function isTerminal(){
@@ -298,9 +307,9 @@ function minimax(depth,alpha,beta,maxPlayer){
                 if(maxPlayer==currentPlayer) ansarr= [-1,-1000000000000];
                 else {
                     ans=ansarr [-1,1000000000000];
-
+                        console.log("win");
                         // debug
-                        console.log(arr);
+                        //console.log(arr);
                 }
             }
             else ansarr = [-1,0];
@@ -363,7 +372,7 @@ function minimax(depth,alpha,beta,maxPlayer){
         }
         numberOfMovesComleted--;
     }
-    console.log(ansarr);
+   // console.log(ansarr);
     return ansarr;
     //currentPlayer = maxPlayer;
 }
