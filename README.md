@@ -1,19 +1,28 @@
-# Instagram Clone
+# Connect Four Game
 
-A clone of instagram with implemented functionalities of uploading posts, comment , authentication.
-Technology used - firebase, react.js
+A two person game in which you have to choose one color and fill four consecutive blocks to win. Trained AI to play against humans.
+Algorith used - Minimax algorithm, Alpha Beta pruning
+
+
+# Technology used
+
+![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
+
 
 #### Clone the project
 
-```bash
-  git clone https://link-to-project
 ```
-#### Running server
-````
-$ cd my-project
-$ npm start
+$ git clone https://github.com/deepanshusingh-hub/connect_four_game/
+```
 
-````
-## [Demo Images](ss1.png)
-## [Demo Images](ss2.png)
-## [Demo Images](ss3.png)
+#### Install dependencies
+
+```
+$ cd connect_four_game
+$ npm i
+```
+
+![Demo Images](ss1.png)
+![Demo Images](ss2.png)
