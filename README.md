@@ -1,7 +1,7 @@
 # Connect Four Game
 
 A two person game in which you have to choose one color and fill four consecutive blocks to win. Trained AI to play against humans.
-Algorith used - Minimax algorithm, Alpha Beta pruning
+Algorithms used - Minimax algorithm, Alpha Beta pruning
 
 
 # Technology used
@@ -21,7 +21,7 @@ $ git clone https://github.com/deepanshusingh-hub/connect_four_game/
 
 ```
 $ cd connect_four_game
-$ npm i
+
 ```
 
 ![Demo Images](ss1.png)
